@@ -15,7 +15,7 @@ async def main():
 
     BALL_RADIUS: int = 10
     BALL_COLOR: tuple = (255, 255, 255)
-    ball_speed: list[int] = [1, -2]
+    ball_speed: list[float] = [1, -2]
     ball_location: list[int] = [SCREEN_DIMENSIONS[0] // 2, SCREEN_DIMENSIONS[1] // 2]
 
     LEFT_PADDLE_DIMENSIONS: tuple = (15, 100)
@@ -43,6 +43,14 @@ async def main():
         # check for top wall boundary
         if ball_location[1] - BALL_RADIUS <= 0:
             ball_speed[1] *= -1
+        
+        # check for bottom boundary
+        if ball_location[1] + BALL_RADIUS >= SCREEN_DIMENSIONS[1]:
+            ball_speed[1] *= -1
+        
+        # check for right boundary
+        if ball_location[0] + BALL_RADIUS >= SCREEN_DIMENSIONS[0]:
+            ball_speed[0] *= -1
 
         ball_location[0] += ball_speed[0]
         ball_location[1] += ball_speed[1]
