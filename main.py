@@ -21,6 +21,7 @@ async def main():
     LEFT_PADDLE_DIMENSIONS: tuple = (15, 100)
     LEFT_PADDLE_OFFSET: int = 30 # distance from left edge of screen
     LEFT_PADDLE_COLOR: tuple = (0, 0, 255)
+    LEFT_PADDLE_SPEED: float = 10
     left_paddle: pygame.Rect = pygame.Rect(LEFT_PADDLE_OFFSET,
                                         SCREEN_DIMENSIONS[1] // 2 - LEFT_PADDLE_DIMENSIONS[1] // 2,
                                         LEFT_PADDLE_DIMENSIONS[0], LEFT_PADDLE_DIMENSIONS[1])
@@ -38,6 +39,14 @@ async def main():
     # MAIN GAME LOOP
     running: bool = True
     while running:
+
+        pressed: list[bool] = pygame.key.get_pressed()
+
+        if pressed[pygame.K_w] and left_paddle.top >= 0:
+            left_paddle.top -= LEFT_PADDLE_SPEED
+
+        if pressed[pygame.K_s] and left_paddle.bottom <= SCREEN_DIMENSIONS[1]:
+            left_paddle.top += LEFT_PADDLE_SPEED
 
         # update the ball
         # check for top wall boundary
@@ -65,7 +74,8 @@ async def main():
         await asyncio.sleep(0) # necessary for pygbag
 
         clock.tick(FPS)
-
+        pygame.event.pump()
+ 
     pygame.quit()
 
 
