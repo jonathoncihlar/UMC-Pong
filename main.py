@@ -13,7 +13,7 @@ async def main():
     SCREEN_DIMENSIONS: tuple = (800, 600)
     FPS: int = 60
 
-    BALL_RADIUS: int = 25
+    BALL_RADIUS: int = 5
     BALL_COLOR: tuple = (255, 0, 255)
     ball_speed: list[float] = [-1.5, -3.5]
     ball_location: list[int] = [SCREEN_DIMENSIONS[0] // 2, SCREEN_DIMENSIONS[1] // 2]
@@ -26,10 +26,8 @@ async def main():
                                         SCREEN_DIMENSIONS[1] // 2 - LEFT_PADDLE_DIMENSIONS[1] // 2,
                                         LEFT_PADDLE_DIMENSIONS[0], LEFT_PADDLE_DIMENSIONS[1])
 
-
     BG_COLOR: tuple = (0, 255, 255)
     
-
     pygame.init()
 
     screen: pygame.Surface = pygame.display.set_mode(SCREEN_DIMENSIONS)
@@ -50,22 +48,14 @@ async def main():
 
         # update the ball
         # check for top wall boundary
-        if ball_location[1] - BALL_RADIUS <= 0:
+        if check_ball_top_bottom_border(ball_location, BALL_RADIUS, SCREEN_DIMENSIONS):
             ball_speed[1] *= -1
         
-        # check for bottom boundary
-        if ball_location[1] + BALL_RADIUS >= SCREEN_DIMENSIONS[1]:
-            ball_speed[1] *= -1
-        
-        # check for right boundary
-        if ball_location[0] + BALL_RADIUS >= SCREEN_DIMENSIONS[0]:
+        # check for left paddle collision
+        if check_ball_paddle_collision(ball_location, BALL_RADIUS, left_paddle):
             ball_speed[0] *= -1
 
-        # check for paddle collision
-        if ball_location[0] - BALL_RADIUS <= left_paddle.right and \
-            ball_location[1] - BALL_RADIUS >= left_paddle.top and \
-            ball_location[1] + BALL_RADIUS <= left_paddle.bottom:
-            ball_speed[0] *= -1
+        # check for right paddle collision
 
 
         ball_location[0] += ball_speed[0]
@@ -84,6 +74,60 @@ async def main():
         pygame.event.pump()
  
     pygame.quit()
+
+
+def check_ball_top_bottom_border(location: list[float], 
+                                 radius: float, 
+                                 screen_dims: tuple) -> bool:
+    """
+    Checks whether hits the top of bottom border
+
+    Parameters:
+        location: list[float] - the current location the ball [x, y]
+        radius: float - the ball radius
+        screen_dims: tuple - the size of the screen (width, height)
+
+    Returns:
+        Whether the ball is hitting a top or bottom border
+    """
+    # top boundary
+    if location[1] - radius <= 0:
+        return True
+
+    # bottom boundary
+    if location[1] + radius >= screen_dims[1]:
+        return True
+
+    return False
+
+def check_ball_paddle_collision(ball_location: list[float], 
+                                ball_radius: float, 
+                                paddle: pygame.Rect) -> bool:
+    """
+    Checks whether a ball has collided with a paddle
+    Parameters:
+        ball_location: list[float] - the location of the ball [x,y]
+        ball_radius: float - the size of the ball
+        paddle: pygame.Rect - A Rectangle object representing a paddle
+    
+    Returns
+        Whether the ball is colliding with any paddle edge.
+    """
+    # check left edge of ball hitting paddle
+    if ball_location[0] - ball_radius <= paddle.right and \
+        ball_location[0] - ball_radius >= paddle.left and \
+        ball_location[1] + ball_radius >= paddle.top and \
+        ball_location[1] - ball_radius <= paddle.bottom:
+        return True
+
+        # check right edge of ball hitting paddle
+    if ball_location[0] + ball_radius >= paddle.right and \
+        ball_location[0] + ball_radius <= paddle.left and \
+        ball_location[1] + ball_radius >= paddle.top and \
+        ball_location[1] - ball_radius <= paddle.bottom:
+        return True
+
+    return False
 
 
 # this will allow us to pybag
