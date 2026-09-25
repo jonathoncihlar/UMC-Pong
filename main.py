@@ -61,6 +61,13 @@ async def main():
         if ball_location[0] + BALL_RADIUS >= SCREEN_DIMENSIONS[0]:
             ball_speed[0] *= -1
 
+        # check for paddle collision
+        if ball_location[0] - BALL_RADIUS <= left_paddle.right and \
+            ball_location[1] - BALL_RADIUS >= left_paddle.top and \
+            ball_location[1] + BALL_RADIUS <= left_paddle.bottom:
+            ball_speed[0] *= -1
+
+
         ball_location[0] += ball_speed[0]
         ball_location[1] += ball_speed[1]
 
